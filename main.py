@@ -5,9 +5,15 @@ import os
 import time
 from tqdm import tqdm
 
+root_url = 'http://learn.tsinghua.edu.cn/f/login'
+course_url_format = \
+  'http://learn.tsinghua.edu.cn/f/wlxt/index/course/teacher/course?wlkcid=%s'
+
 browser = webdriver.Chrome()
 
-browser.get('http://learn.tsinghua.edu.cn/f/login')
+# log in
+
+browser.get(root_url)
 
 elem = browser.find_element_by_name('i_user')
 elem.send_keys(config.username)
@@ -17,16 +23,21 @@ elem.send_keys(config.password)
 
 browser.find_element_by_id('loginButtonId').click()
 
-time.sleep(1)
+time.sleep(1) # wait for loading
+
+# go to course
 
 browser.execute_script('initkcfws(%s);' % config.course_code)
-browser.get('http://learn.tsinghua.edu.cn/f/wlxt/index/course/teacher/course?wlkcid=%s' % config.course_code)
+browser.get(course_url_format % config.course_code)
+
+# go to howework
 
 browser.find_element_by_id('wlxt_kczy_zy').click()
-
 browser.execute_script('beforeReview(\'%s\');' % config.homework_id)
 
 time.sleep(1)
+
+# submit reports
 
 table = browser.find_element_by_tag_name('table')
 n_students = len(table.find_elements_by_tag_name('tr')[1:])
@@ -39,7 +50,7 @@ for idx in tqdm(list(range(n_students)), ascii=True):
     student_id = columns[2].text
     browser.get(columns[10].find_element_by_tag_name('a').get_property('href'))
     browser.find_element_by_id('fileupload').send_keys(
-      os.path.join(config.reports_dir, config.reports_pattern % student_id)
+      os.path.join(config.reports_dir, config.report_name_format % student_id)
     )
     browser.execute_script('goSubmit()')
   except Exception as e:
