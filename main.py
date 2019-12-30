@@ -56,7 +56,6 @@ for idx in tqdm(list(range(n_students)), ascii=True):
     browser.execute_script('goSubmit()')
     while browser.current_url == curr_url:
       time.sleep(5)
-    time.sleep(5)
   except Exception as e:
     print('---\n')
     print(e)
