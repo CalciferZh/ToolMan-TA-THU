@@ -52,7 +52,11 @@ for idx in tqdm(list(range(n_students)), ascii=True):
     browser.find_element_by_id('fileupload').send_keys(
       os.path.join(config.reports_dir, config.report_name_format % student_id)
     )
+    curr_url = browser.current_url
     browser.execute_script('goSubmit()')
+    while browser.current_url == curr_url:
+      time.sleep(5)
+    time.sleep(5)
   except Exception as e:
     print('---\n')
     print(e)
