@@ -41,25 +41,25 @@ time.sleep(1)
 
 table = browser.find_element_by_tag_name('table')
 n_students = len(table.find_elements_by_tag_name('tr')[1:])
+table_url = browser.current_url
 
 for idx in tqdm(list(range(n_students)), ascii=True):
-  try:
-    table = browser.find_element_by_tag_name('table')
-    row = table.find_elements_by_tag_name('tr')[idx + 1]
-    columns = row.find_elements_by_tag_name('td')
-    student_id = columns[2].text
-    browser.get(columns[10].find_element_by_tag_name('a').get_property('href'))
-    browser.find_element_by_id('fileupload').send_keys(
-      os.path.join(config.reports_dir, config.report_name_format % student_id)
-    )
-    curr_url = browser.current_url
-    browser.execute_script('goSubmit()')
-    while browser.current_url == curr_url:
-      time.sleep(5)
-  except Exception as e:
-    print('---\n')
-    print(e)
-    print(student_id)
-  time.sleep(5)
+  table = browser.find_element_by_tag_name('table')
+  row = table.find_elements_by_tag_name('tr')[idx + 1]
+  columns = row.find_elements_by_tag_name('td')
+  student_id = columns[2].text
+  browser.get(columns[10].find_element_by_tag_name('a').get_property('href'))
+  file_path = \
+    os.path.join(config.reports_dir, config.report_name_format % student_id)
+  if os.path.isfile(file_path):
+    browser.find_element_by_id('fileupload').send_keys(file_path)
+  else:
+    browser.find_element_by_id('cj').send_keys('0')
+  curr_url = browser.current_url
+  browser.execute_script('goSubmit()')
+  while browser.current_url == curr_url:
+    time.sleep(3)
+  browser.get(table_url)
+  time.sleep(2)
 
 browser.close()
