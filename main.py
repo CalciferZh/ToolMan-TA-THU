@@ -48,7 +48,7 @@ for idx in tqdm(list(range(n_students)), ascii=True):
   row = table.find_elements_by_tag_name('tr')[idx + 1]
   columns = row.find_elements_by_tag_name('td')
   student_id = columns[2].text
-  browser.get(columns[10].find_element_by_tag_name('a').get_property('href'))
+  browser.get(columns[11].find_element_by_tag_name('a').get_property('href'))
   file_path = \
     os.path.join(config.reports_dir, config.report_name_format % student_id)
   if os.path.isfile(file_path):
